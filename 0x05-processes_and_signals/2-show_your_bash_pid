@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Get the list of all running processes, filter lines containing "bash" and display them
+# shellcheck disable=SC2009
+# Ignore the SC2009 shellcheck error for grep in this script
+ps axfo user,pid,%cpu,%mem,vsz,rss,tty,stat,start,time,command | grep bash
