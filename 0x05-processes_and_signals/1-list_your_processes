@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Get the list of all running processes with hierarchy and format the output using awk
+ps axfo user,pid,%cpu,%mem,vsz,rss,tty,stat,start,time,command
