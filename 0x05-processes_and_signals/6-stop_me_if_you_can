@@ -3,9 +3,16 @@
 process_pid=$(pgrep -f "4-to_infinity_and_beyond.sh")
 
 if [ -n "$process_pid" ]; then
-  echo "Stopping process $process_pid"
-  # Send the SIGUSR1 signal to the process to terminate it gracefully
-  kill -SIGUSR1 "$process_pid"
-else
-  echo "Process '4-to_infinity_and_beyond.sh' is not running."
+	  echo "Stopping process 4-to_infinity_and_beyond (PID: $process_pid)"
+	    # Get the PGID of the process
+	      process_pgid=$(ps -o pgid= -p "$process_pid" | tr -d '[:space:]')
+
+	        # Send the SIGTERM signal to the process group to terminate it gracefully
+		  kill -- "-$process_pgid"
+
+		    # Wait for the process to terminate
+		      wait "$process_pid"
+	      else
+		        echo "Process '4-to_infinity_and_beyond.sh' is not running."
 fi
+
