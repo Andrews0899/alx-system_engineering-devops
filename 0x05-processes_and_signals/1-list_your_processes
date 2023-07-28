@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 # Get the list of all running processes with hierarchy and format the output using awk
+# Ignore the SC2009 shellcheck error for grep in this script
 ps axfo user,pid,%cpu,%mem,vsz,rss,tty,stat,start,time,command
