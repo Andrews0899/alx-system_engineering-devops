@@ -1,27 +1,64 @@
 #!/usr/bin/env bash
-#Manages the script manage_my_process.
-
-if [ "$1" == "start" ]
-then
-	./manage_my_process &
-	echo $$ > /var/run/my_process.pid
-	echo "manage_my_process started"
-
-elif [ "$1" == "stop" ]
-then
-	kill "$(pgrep -f ./manage_my_process)"
-	rm /var/run/my_process.pid
-	echo "manage_my_process stopped"
-
-elif [ "$1" == "restart" ]
-then
-	kill "$(pgrep -f ./manage_my_process)"
-	rm /var/run/my_process.pid
-	./manage_my_process &
-	echo $$ > /var/run/my_process.pid
-	echo "manage_my_process restarted"
-
-else
-	echo  "Usage: manage_my_process {start|stop|restart}"
+# Check if the script is being run as root (to access /var/run)
+if [ "$EUID" -ne 0 ]; then
+	  echo "Please run this script as root or with sudo."
+	    exit 1
 fi
+
+# Function to start the manage_my_process script
+start() {
+	  # Check if the process is already running
+	    if [ -f "/var/run/my_process.pid" ]; then
+		        echo "manage_my_process is already started."
+			    return
+			      fi
+
+			        # Start the manage_my_process script in the background
+				  ./manage_my_process &
+				    pid=$!
+
+				      # Create the PID file
+				        echo $pid > /var/run/my_process.pid
+
+					  echo "manage_my_process started"
+				  }
+
+			  # Function to stop the manage_my_process script
+			  stop() {
+				    # Check if the process is running
+				      if [ -f "/var/run/my_process.pid" ]; then
+					          pid=$(cat /var/run/my_process.pid)
+						      kill $pid
+						          rm /var/run/my_process.pid
+							      echo "manage_my_process stopped"
+							        else
+									    echo "manage_my_process is not running."
+									      fi
+								      }
+
+							      # Function to restart the manage_my_process script
+							      restart() {
+								        stop
+									  start
+									    echo "manage_my_process restarted"
+								    }
+
+							    # Check the argument provided to the script
+							    case "$1" in
+								      start)
+									          start
+										      ;;
+										        stop)
+												    stop
+												        ;;
+													  restart)
+														      restart
+														          ;;
+															    *)
+																        echo "Usage: $0 {start|stop|restart}"
+																	    exit 1
+																	        ;;
+																esac
+
+																exit 0
 
