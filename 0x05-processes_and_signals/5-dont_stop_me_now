@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Find the process ID (PID) of the running "4-to_infinity_and_beyond" script
+process_pid=$(pgrep -x "4-to_infinity_and_beyond")
+
+if [ -n "$process_pid" ]; then
+  echo "Killing process $process_pid"
+  kill "$process_pid"
+else
+  echo "Process '4-to_infinity_and_beyond' is not running."
+fi
