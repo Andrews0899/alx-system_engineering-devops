@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Find the process ID (PID) of the running "4-to_infinity_and_beyond" script
-process_pid=$(pgrep -x "4-to_infinity_and_beyond")
+process_pid=$(pgrep -f "4-to_infinity_and_beyond.sh")
 
 if [ -n "$process_pid" ]; then
-  echo "Killing process $process_pid"
-  kill "$process_pid"
-else
-  echo "Process '4-to_infinity_and_beyond' is not running."
+	  echo "Killing process $process_pid"
+	    # Send the SIGTERM signal to the process to terminate it gracefully
+	      kill "$process_pid"
+      else
+	        echo "Process '4-to_infinity_and_beyond.sh' is not running."
 fi
