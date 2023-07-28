@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 #Bash script that displays To infinity and beyond indefinitely
+# Trap the SIGINT signal (Ctrl+C) and run the cleanup function
+trap cleanup SIGINT
 
+# Cleanup function to stop the infinite loop
+cleanup() {
+	  echo "Exiting..."
+	    exit 0
+    }
+
+# Run the infinite loop
 while true; do
-  echo "To infinity and beyond"
-  sleep 2
-done
+	  echo "To infinity and beyond"
+	    sleep 2
+    done
