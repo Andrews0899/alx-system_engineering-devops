@@ -1,11 +1,34 @@
 #!/usr/bin/env bash
-# Find the process ID (PID) of the running "4-to_infinity_and_beyond.sh" script
-process_pid=$(pgrep -f "4-to_infinity_and_beyond.sh")
 
-if [ -n "$process_pid" ]; then
-  echo "Stopping process $process_pid"
-  # Send the SIGUSR1 signal to the process to terminate it gracefully
-  kill -SIGUSR1 "$process_pid"
-else
-  echo "Process '4-to_infinity_and_beyond.sh' is not running."
-fi
+# Create a file to act as a flag
+flag_file="/tmp/stop_4_to_infinity"
+
+# Trap the SIGUSR1 signal and run the cleanup function
+trap cleanup SIGUSR1
+
+# Cleanup function to stop the infinite loop and display "Terminated" message
+cleanup() {
+	  echo "Terminated"
+	    exit 0
+    }
+
+# Check for the flag file in a loop
+while true; do
+	  if [ -f "$flag_file" ]; then
+		      # If the flag file exists, remove it and exit the loop
+		          rm "$flag_file"
+			      break
+			        fi
+				  echo "To infinity and beyond"
+				    sleep 2
+			    done
+			    # Find the process ID (PID) of the running "4-to_infinity_and_beyond.sh" script
+			    process_pid=$(pgrep -f "4-to_infinity_and_beyond.sh")
+
+			    if [ -n "$process_pid" ]; then
+				      echo "Stopping process $process_pid"
+				        # Send the SIGUSR1 signal to the process to terminate it gracefully
+					  kill -SIGUSR1 "$process_pid"
+				  else
+					    echo "Process '4-to_infinity_and_beyond.sh' is not running."
+			    fi
