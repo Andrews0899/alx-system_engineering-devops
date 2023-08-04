@@ -1,17 +1,34 @@
 #!/usr/bin/env bash
+#Bash script that displays listening ports.
+
+# Function to print port and program name
+print_port_info() {
+    local proto="$1"
+    local local_addr="$2"
+    local foreign_addr="$3"
+    local pid_program="$4"
+
+    local port
+    port=$(echo "$local_addr" | awk -F':' '{print $2}')
+    local pname
+    pname=$(ps -p "$pid_program" -o comm=)
+
+    # Display only common ports and their associated programs
+    if [[ "$port" == "22" || "$port" == "80" || "$port" == "443" ]]; then
+        printf "%s\t\t%s\t%s\tLISTEN\t%s/%s\n" "$proto" "$local_addr" "$foreign_addr" "$pid_program" "$pname"
+    fi
+}
 
 # Display listening ports with PID and program name
-echo "Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name"
+printf "Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name\n"
 
 # Loop through listening TCP ports
-netstat -tnlp 2>/dev/null | awk '$6 == "LISTEN" {print $1 "\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local foreign pid_program; do
-    pname=$(basename "$(readlink -f /proc/$pid_program/exe)")
-    echo "$proto\t\t$local\t$foreign\tLISTEN\t$pid_program/$pname"
+netstat -tnlp 2>/dev/null | awk '$6 == "LISTEN" {print $1 "\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local _ _ pid_program; do
+    print_port_info "$proto" "$local" "N/A" "$pid_program"
 done
 
 # Loop through listening UDP ports
-netstat -unlp 2>/dev/null | awk '$6 == "UNCONN" {print $1 "\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local foreign pid_program; do
-    pname=$(basename "$(readlink -f /proc/$pid_program/exe)")
-    echo "$proto\t\t$local\t$foreign\t\t\t\t\t$pid_program/$pname"
+netstat -unlp 2>/dev/null | awk '$6 == "UNCONN" {print $1 "\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local _ _ pid_program; do
+    print_port_info "$proto" "$local" "N/A" "$pid_program"
 done
 
