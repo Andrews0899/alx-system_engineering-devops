@@ -1,23 +1,17 @@
 #!/usr/bin/env bash
 
-# Display listening TCP ports
-echo "Active Internet connections (only servers)"
+# Display listening ports with PID and program name
 echo "Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name"
-netstat -tnlp | awk '$6 == "LISTEN" {print $1 "\t\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local foreign pid_program; do
-    pname=$(ps -p "$pid_program" -o comm=)
-    echo "$proto\t\t$local\t\t$foreign\t\tLISTEN\t$pid_program/$pname"
+
+# Loop through listening TCP ports
+netstat -tnlp 2>/dev/null | awk '$6 == "LISTEN" {print $1 "\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local foreign pid_program; do
+    pname=$(basename "$(readlink -f /proc/$pid_program/exe)")
+    echo "$proto\t\t$local\t$foreign\tLISTEN\t$pid_program/$pname"
 done
 
-# Display listening UDP ports
-netstat -unlp | awk '$6 == "UNCONN" {print $1 "\t\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local foreign pid_program; do
-    pname=$(ps -p "$pid_program" -o comm=)
-    echo "$proto\t\t$local\t\t$foreign\t\t\t\t\t$pid_program/$pname"
+# Loop through listening UDP ports
+netstat -unlp 2>/dev/null | awk '$6 == "UNCONN" {print $1 "\t" $4 "\t\t" $7}' | sed -E 's/.*:(.*) /\1/' | while IFS=$'\t' read -r proto local foreign pid_program; do
+    pname=$(basename "$(readlink -f /proc/$pid_program/exe)")
+    echo "$proto\t\t$local\t$foreign\t\t\t\t\t$pid_program/$pname"
 done
 
-# Display listening UNIX domain sockets
-echo "Active UNIX domain sockets (only servers)"
-echo "Proto RefCnt Flags       Type       State         I-Node   PID/Program name    Path"
-netstat -lx | awk '$4 == "LISTEN" {print $1 "\t\t\t\t$6\t\t$7"}' | while IFS=$'\t' read -r proto type pid_program path; do
-    pname=$(ps -p "$pid_program" -o comm=)
-    echo "$proto\t\t\t\t$pid_program\t\t$path\t\t\t\t$pid_program/$pname"
-done
