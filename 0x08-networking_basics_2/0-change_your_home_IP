@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Check if the script is running in Docker
+if grep -q "docker" /proc/1/cgroup; then
+  # Update the DNS resolution for localhost and facebook.com
+  echo "127.0.0.2 localhost" | sudo tee -a /etc/hosts >/dev/null
+  echo "8.8.8.8 facebook.com" | sudo tee -a /etc/hosts >/dev/null
+else
+  echo "This script should be run inside a Docker container."
+  exit 1
+fi
