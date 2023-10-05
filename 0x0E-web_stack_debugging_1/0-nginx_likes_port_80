@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 # debugging nginx port 80
 # How I resolved the challeng: delete the existing ../sites-enabled/default and replace it with a copy of
-sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 sudo service nginx restart
