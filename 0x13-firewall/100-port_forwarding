@@ -1,0 +1,31 @@
+# Install ufw if not already installed
+sudo apt-get -y update
+sudo apt-get -y install ufw
+
+# Disable ufw to make changes
+sudo ufw disable
+
+# Set default policies
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# Allow necessary ports
+sudo ufw allow 22/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 80/tcp
+
+# Enable ufw
+sudo ufw enable
+
+# Stop the ufw service to make changes to iptables
+sudo systemctl stop ufw
+
+# Set up port forwarding using iptables
+sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 80
+
+# Save iptables rules so they persist after reboot
+sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+
+# Start ufw service
+sudo systemctl start ufw
+
