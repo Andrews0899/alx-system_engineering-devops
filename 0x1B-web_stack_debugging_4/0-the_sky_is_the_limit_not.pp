@@ -5,7 +5,7 @@ exec { 'change ulimit':
     command => "sed -i 's/15/2000/g' /etc/default/nginx"
 }
 
-exec { 'nging restart':
+exec { 'nginx restart':
     path    => '/etc/init.d',
     command => 'nginx restart'
 }
